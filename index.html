@@ -1,11 +1,44 @@
 <html>
 <head>
     <style>
-        #map {
-           width: 100%;
-           height: 90%;
-           background-color: aquamarine; 
+        #content {
+            width:100%;
+            height:100%;
         }
+        #map {
+           width: 89%;
+           height: 100%;
+           background-color: #cccccc;
+           display: inline-block;
+           margin: none;
+           padding: none;
+           border: none;
+        }
+        #controls {
+            width:10%;
+            height:100%;
+            vertical-align: top;
+            background-color: #aaaaaa;
+            display: inline-block;
+        }
+        .mapItem {
+            cursor: pointer;
+            display: block;
+            width:100%;
+            margin: 0;
+            padding: 10;
+            color:white;
+        }
+        .mapItemEnabled {
+            cursor: pointer;
+            display: block;
+            width:100%;
+            margin: 0;
+            padding: 10;
+            color:white;
+            font-weight: bold;
+        }
+
     </style>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
@@ -18,17 +51,66 @@
         crossorigin=""></script>
 </head>
 
-<div id="map"></div>
+<div id="content">
+    <div id="map"></div>
+    <div id="controls">
+        <div class="mapItem" enabled="0" onclick="addRemoveLayer('1868-oakland')">Oakland 1868</div>
+        <div class="mapItem" enabled="0" onclick="addRemoveLayer('1876-oakland')">Oakland 1876</div>
+        <div class="mapItem" enabled="0" onclick="addRemoveLayer('1898-oakland')">Oakland 1898</div>
+        <div class="mapItem" enabled="0" onclick="addRemoveLayer('1899-oakland')">Oakland 1899</div>
+    </div>
+</div>
 
 
 
 <script>
     var map = L.map('map').setView([37.798970109287374, -122.26226135192721], 13);
-    
-    L.tileLayer('/data/1898-oakland/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.piratestudios.com">Pirate Studios</a>'
-    }).addTo(map);
-    
+    map.setMinZoom(13)
+    map.setMaxZoom(16)
+
+    var layers = {}
+    function addLayer(name)
+    {
+        var layer = null;
+        if(name in layers)
+        {
+            layer = layers[name];
+        }
+        else
+        {
+            layer = L.tileLayer("/data/" + name + "/{z}/{x}/{y}.png");
+            layers[name] = layer;
+        }
+        layer.addTo(map);
+    }
+
+    function removeLayer(name)
+    {
+        if(name in layers)
+        {
+            layer = layers[name];
+            layer.removeFrom(map);
+        }
+    }
+
+    function addRemoveLayer(name)
+    {
+        console.log(event.target);
+        var enabled = event.target.getAttribute("enabled");
+        if(enabled == "0")
+        {
+            addLayer(name)
+            event.target.setAttribute("enabled", "1");
+            event.target.setAttribute("class", "mapItemEnabled");
+        }
+        else
+        {
+            removeLayer(name);
+            event.target.setAttribute("enabled", "0");
+            event.target.setAttribute("class", "mapItem");
+        }
+    }
+
 </script>
     
 </html>
