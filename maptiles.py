@@ -48,6 +48,14 @@ data = {
             }
         },
         {
+            'file':'data/1898-oakland.jpg',
+            'anchors': {
+                'a': [550,1260],
+                'b': [837,1310],
+                'c': [870,1512]
+            }
+        },
+        {
             'file':'data/1899-oakland.jpg',
             'anchors': {
                 'a': [3143,4764],
@@ -61,14 +69,6 @@ data = {
                 'a': [711,786],
                 'b': [743,812],
                 'c': [714,839]
-            }
-        },
-        {
-            'file':'data/1898-oakland.jpg',
-            'anchors': {
-                'a': [550,1260],
-                'b': [837,1310],
-                'c': [870,1512]
             }
         }
 
@@ -259,6 +259,7 @@ def filepath_for_map(map):
 def filename_for_zoom_level(map, zoom_level):
     tokens = map['file'].split('.')
     extension = tokens[-1]
+    extension = 'png'
     filename = '.'.join(tokens[0:-1])
     filename_with_zoom_level = '{}-{}.{}'.format(filename, zoom_level, extension)
     
@@ -352,7 +353,7 @@ def fit_map(map, zoom_level, anchors):
     map_rotation = compute_map_rotation(map, anchors)
     map_scale = compute_map_scale(map, zoom_level, anchors)
 
-    im = Image.open(map['file'])
+    im = Image.open(map['file']).convert('RGBA')
 
     # First, scale the image to work at the correct zoom level.
     im_scaled = im.resize((int(round(im.width*map_scale)), int(round(im.height*map_scale))))
@@ -417,7 +418,7 @@ def fit_map(map, zoom_level, anchors):
 
 
 def main():
-    map = data['maps'][4]
+    map = data['maps'][3]
 
     # For testing
     # zoom_level = 13
