@@ -58,15 +58,25 @@
         <div class="mapItem" enabled="0" onclick="addRemoveLayer('1876-oakland')">Oakland 1876</div>
         <div class="mapItem" enabled="0" onclick="addRemoveLayer('1898-oakland')">Oakland 1898</div>
         <div class="mapItem" enabled="0" onclick="addRemoveLayer('1899-oakland')">Oakland 1899</div>
+        <div class="mapItem" enabled="0" onclick="addRemoveLayer('2022-oakland-debug')">Oakland 2022 Debug</div>
+        
     </div>
 </div>
 
 
 
 <script>
-    var map = L.map('map').setView([37.798970109287374, -122.26226135192721], 13);
+    var map = L.map('map').setView([37.804334, -122.271155], 13);
     map.setMinZoom(13)
     map.setMaxZoom(16)
+
+
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+      }).addTo(map);
+
+
 
     var layers = {}
     function addLayer(name)
