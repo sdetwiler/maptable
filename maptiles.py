@@ -98,6 +98,11 @@ def vec2_sub(a, b):
 def vec2_scale(a, s):
     return(a[0]*s, a[1]*s)
 
+def vec2_magnitude(a, b):
+    dx = a[0]-b[0]
+    dy = a[1]-b[1]
+    return math.sqrt(dx*dx + dy*dy)
+
 
 # https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Resolution_and_Scale
 
@@ -111,6 +116,12 @@ def degrees_per_pixel(at_lat, zoom_level):
     at_lat_rad = math.radians(at_lat)
     zoom_tile_width_degrees = (360.0 * math.cos(at_lat_rad)) / math.pow(2, zoom_level)
     return zoom_tile_width_degrees / TILE_WIDTH_PIXELS
+
+
+def pixels_per_degree(at_lat, zoom_level):
+    at_lat_rad = math.radians(at_lat)
+    zoom_tile_width_degrees = (360.0 * math.cos(at_lat_rad)) / math.pow(2, zoom_level)
+    return TILE_WIDTH_PIXELS / zoom_tile_width_degrees
 
 
 def meters_per_deg(at_lat):
@@ -183,18 +194,10 @@ def latlong_for_pixel(pixel_xy, image_anchor, map_anchor, zoom_level):
     distance_pixels = vec2_sub(pixel_xy, image_anchor)
     print('distance_pixels: {}'.format(distance_pixels))
 
-    # convert distance in pixels to meters
-    distance_meters = (
-        distance_pixels[0] * meters_per_pixel(map_anchor[0], zoom_level),
-        distance_pixels[1] * meters_per_pixel(map_anchor[0], zoom_level)
-    )
-
-    print('distance_meters: {}'.format(distance_meters))
-    
-    # convert distance in meters to degrees
-    distance_degrees = (
-        distance_meters[1] * degrees_per_meter(map_anchor[0]),
-        distance_meters[0] * degrees_per_meter(map_anchor[0])
+    # convert distance in pixels to degrees
+    distance_degrees = (        
+        distance_pixels[1] * degrees_per_pixel(map_anchor[0], zoom_level),
+        distance_pixels[0] * degrees_per_pixel(map_anchor[0], zoom_level)
     )
     
     print('distance_degrees: {}'.format(distance_degrees))
@@ -327,8 +330,8 @@ def generate_map_tiles(map, zoom_level, map_ul_latlong, map_lr_latlong):
     
     delta_latlong = vec2_sub(map_ul_latlong, ul_tile_latlong)
     delta_pixels = (
-        delta_latlong[1] * (1 / degrees_per_pixel(map_ul_latlong[0], zoom_level)),
-        delta_latlong[0] * (1 / degrees_per_pixel(map_ul_latlong[0], zoom_level))
+        delta_latlong[1] * pixels_per_degree(map_ul_latlong[0], zoom_level),
+        delta_latlong[0] * pixels_per_degree(map_ul_latlong[0], zoom_level)
     )
 
     print('ul_tile_xy:      {}'.format(ul_tile_xy))
@@ -339,11 +342,12 @@ def generate_map_tiles(map, zoom_level, map_ul_latlong, map_lr_latlong):
     im = Image.open(filename)
     
 
-    pixel_y = delta_pixels[1]
+    pixel_y =  -delta_pixels[1]
 
     i=0
     for y in range(ul_tile_xy[1], lr_tile_xy[1]+1):
-        pixel_x = -delta_pixels[0]
+        pixel_x =  delta_pixels[0]
+
         for x in range(ul_tile_xy[0], lr_tile_xy[0]+1):
             filepath_with_x = os.path.join(filepath, str(x))
             os.makedirs(filepath_with_x, exist_ok=True)
@@ -369,6 +373,8 @@ def generate_map_tiles(map, zoom_level, map_ul_latlong, map_lr_latlong):
 
 def fit_map(map, zoom_level, anchors):
     '''Rotates and scales the input map. Writes map to disk with the zoom_level included in the filename.
+
+    Returns tuple with the latitude and longitude for the upper left and lower right corners.
     '''
     
     print('--fit_map--')
@@ -388,7 +394,7 @@ def fit_map(map, zoom_level, anchors):
 
     map_scaled_center_pixels = (im_scaled.width/2, im_scaled.height/2)
     map_scaled_center_latlong = latlong_for_pixel(map_scaled_center_pixels, vec2_scale(map['anchors']['a'], map_scale), anchors['a'], zoom_level)
-    # print('map_scaled_center_latlong: {}'.format(map_scaled_center_latlong))
+    print('map_scaled_center_latlong: {}'.format(map_scaled_center_latlong))
 
     # DEBUG: Draw anchors for debugging. Anchors must be scaled to zoom level.
     draw_anchor(map_scaled_center_pixels, im_scaled, color='#00aa00', length=10*map_scale)
@@ -409,12 +415,14 @@ def fit_map(map, zoom_level, anchors):
     ul_latlong = latlong_for_pixel((0, 0), image_anchor, map_anchor, zoom_level)
     ur_latlong = latlong_for_pixel((im_scaled.width, 0), image_anchor, map_anchor, zoom_level)
     lr_latlong = latlong_for_pixel((im_scaled.width, im_scaled.height), image_anchor, map_anchor, zoom_level)
+    print('lr_latlong: {}'.format(lr_latlong))
     ll_latlong = latlong_for_pixel((0, im_scaled.height), image_anchor, map_anchor, zoom_level)
 
     # Rotate each latlong.
     rotated_ul_latlong = rotate_around(ul_latlong, map_scaled_center_latlong, map_rotation)
     rotated_ur_latlong = rotate_around(ur_latlong, map_scaled_center_latlong, map_rotation)
     rotated_lr_latlong = rotate_around(lr_latlong, map_scaled_center_latlong, map_rotation)
+    print('rotated_lr_latlong: {}'.format(rotated_lr_latlong))
     rotated_ll_latlong = rotate_around(ll_latlong, map_scaled_center_latlong, map_rotation)
 
     # Find extents.
@@ -464,11 +472,14 @@ def test__latlong_for_pixel():
         'c': [37.795135, -122.269526]
     }
 
-    for zoom_level in range(13,17):
+    for zoom_level in range(14,15):
         print('====')
 
         map_scale = compute_map_scale(map, zoom_level, anchors)
         print('map_scale:     {}'.format(map_scale))
+
+
+        print('anchor_a:      {}'.format(anchors['a']))
 
         pixel_xy = vec2_scale(map['anchors']['c'], map_scale)
         pixel_latlong = latlong_for_pixel(
@@ -492,7 +503,7 @@ def main():
     # return
 
     #### For testing
-    map = data['maps'][1]
+    map = data['maps'][0]
     # zoom_level = 13
     # (map_ul_latlong, map_lr_latlong) = fit_map(map, zoom_level, data['anchors'])
     # generate_map_tiles(map, zoom_level, map_ul_latlong, map_lr_latlong)
