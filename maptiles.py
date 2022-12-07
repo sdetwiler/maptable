@@ -13,7 +13,7 @@ from PIL import Image, ImageDraw
 # Disable max pixel size
 Image.MAX_IMAGE_PIXELS = None
 
-
+RADIUS_METERS = 6372.7982 * 1000
 CIRCUMFERENCE_METERS = 40075.016686 * 1000
 TILE_WIDTH_PIXELS = 256
 
@@ -34,12 +34,11 @@ data = {
         {
             'file':'data/2022-oakland-debug.png',
             'anchors': {
-                'a': [517,850],
-                'b': [1265,987],
-                'c': [1340,1532]
+                'a': [819,837],
+                'b': [1192,905],
+                'c': [1230,1177]
             }
         },
-
         {
             'file':'data/1868-oakland.jpg',
             'anchors': {
@@ -96,63 +95,152 @@ def vec2_sub(a, b):
 
 
 def vec2_scale(a, s):
-    return(a[0]*s, a[1]*s)
+    if type(s) is tuple:
+        return(a[0]*s[0], a[1]*s[1])
+    else:
+        return(a[0]*s, a[1]*s)
 
-def vec2_magnitude(a, b):
-    dx = a[0]-b[0]
-    dy = a[1]-b[1]
-    return math.sqrt(dx*dx + dy*dy)
+
+
+# TODO Fix all of this to follow Mercator Projections
+# https://en.wikipedia.org/wiki/Mercator_projection
+# https://en.wikipedia.org/wiki/Web_Mercator_projection
 
 
 # https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Resolution_and_Scale
 
-def meters_per_pixel(at_lat, zoom_level):
-    at_lat_rad = math.radians(at_lat)
-    zoom_tile_width_meters = (CIRCUMFERENCE_METERS * math.cos(at_lat_rad)) / math.pow(2, zoom_level)
+
+
+def meters_lat_per_pixel(zoom_level):
+    zoom_tile_width_meters = CIRCUMFERENCE_METERS / math.pow(2, zoom_level)
     return zoom_tile_width_meters / TILE_WIDTH_PIXELS
 
-
-def degrees_per_pixel(at_lat, zoom_level):
+def meters_long_per_pixel(at_lat, zoom_level):
     at_lat_rad = math.radians(at_lat)
-    zoom_tile_width_degrees = (360.0 * math.cos(at_lat_rad)) / math.pow(2, zoom_level)
+    zoom_tile_width_meters = (CIRCUMFERENCE_METERS * math.cos(at_lat_rad)) / math.pow(2, zoom_level)
+    return (zoom_tile_width_meters / TILE_WIDTH_PIXELS)
+
+
+def degrees_lat_per_pixel(zoom_level):
+    zoom_tile_width_degrees = 360.0 / math.pow(2, zoom_level)
     return zoom_tile_width_degrees / TILE_WIDTH_PIXELS
 
-
-def pixels_per_degree(at_lat, zoom_level):
+def degrees_long_per_pixel(at_lat, zoom_level):
     at_lat_rad = math.radians(at_lat)
     zoom_tile_width_degrees = (360.0 * math.cos(at_lat_rad)) / math.pow(2, zoom_level)
+    return (zoom_tile_width_degrees / TILE_WIDTH_PIXELS)
+
+
+def pixels_per_degree_lat(zoom_level):
+    zoom_tile_width_degrees = 360.0 / math.pow(2, zoom_level)
     return TILE_WIDTH_PIXELS / zoom_tile_width_degrees
 
-
-def meters_per_deg(at_lat):
+def pixels_per_degree_long(at_lat, zoom_level):
     at_lat_rad = math.radians(at_lat)
-    return (CIRCUMFERENCE_METERS * math.cos(at_lat_rad)) / 360.0
+    zoom_tile_width_degrees = (360.0 * math.cos(at_lat_rad)) / math.pow(2, zoom_level)
+    return (TILE_WIDTH_PIXELS / zoom_tile_width_degrees)
 
 
-def degrees_per_meter(at_lat):
-    return 1.0 / meters_per_deg(at_lat)
+def meters_per_degree_lat():
+    return (CIRCUMFERENCE_METERS) / 360.0
+
+def meters_per_degree_long(at_lat):
+    at_lat_rad = math.radians(at_lat)
+    return ((CIRCUMFERENCE_METERS * math.cos(at_lat_rad)) / 360.0) 
+
+
+def degrees_lat_per_meter():
+    return 1.0 / meters_per_degree_lat()
+
+def degrees_long_per_meter(at_lat):
+    return 1.0 / meters_per_degree_long(at_lat)
+
+
+
+
+
+def distance_between(i_latlong, j_latlong):
+    # https://www.movable-type.co.uk/scripts/latlong.html
+    i_latlong_rad = (math.radians(i_latlong[0]), math.radians(i_latlong[1]))
+    j_latlong_rad = (math.radians(j_latlong[0]), math.radians(j_latlong[1]))
+
+
+    delta_lat = j_latlong_rad[0] - i_latlong_rad[0]
+    delta_long = j_latlong_rad[1] - i_latlong_rad[1]
+
+    a = math.sin(delta_lat/2) * math.sin(delta_lat/2) + math.cos(i_latlong_rad[0]) * math.cos(j_latlong_rad[0]) * math.sin(delta_long/2) * math.sin(delta_long/2)
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+    d = RADIUS_METERS * c
+    return d
+
+
+def compute_map_scale_2(map, zoom_level, anchors):
+    print('\n--compute_map_scale_2--')
+    print('anchors:       {}'.format(anchors))
+
+    distance_anchors_meters = distance_between(anchors['a'], anchors['b'])
+    print('distance_anchors_meters: {}'.format(distance_anchors_meters))
+
+    map_x_pixels = map['anchors']['a'][0] - map['anchors']['b'][0]
+    map_y_pixels = map['anchors']['a'][1] - map['anchors']['b'][1]
+
+    distance_anchors_pixels = math.sqrt(map_x_pixels*map_x_pixels + map_y_pixels*map_y_pixels)
+    print('distance_anchors_pixels: {}'.format(distance_anchors_pixels))
+
+    map_meters_per_pixel = distance_anchors_meters / distance_anchors_pixels
+    print('map_meters_per_pixel: {}'.format(map_meters_per_pixel))
+
+    print('zoom_level:    {}'.format(zoom_level))
+    zoom_x_meters_per_pixel = meters_long_per_pixel(anchors['a'][0], zoom_level)
+    print('zoom_x m/px:   {}'.format(zoom_x_meters_per_pixel))
+    zoom_y_meters_per_pixel = meters_lat_per_pixel(zoom_level)
+    print('zoom_y m/px:   {}'.format(zoom_y_meters_per_pixel))
+
+    map_x_scale = map_meters_per_pixel/zoom_x_meters_per_pixel
+    map_y_scale = map_meters_per_pixel/zoom_y_meters_per_pixel
+
+    print('map_x_scale:   {}'.format(map_x_scale))
+    print('map_y_scale:   {}'.format(map_y_scale))
+
+    print('--/compute_map_scale_2--\n')
+    return (map_x_scale, map_y_scale)
 
 
 def compute_map_scale(map, zoom_level, anchors):
     # How many meters between anchors a and b    
-    anchor_x_meters = math.fabs(anchors['a'][1] - anchors['b'][1]) * meters_per_deg(anchors['a'][0])
-    # print('meters:       {}'.format(anchor_y_meters))
+    print('\n--compute_map_scale--')
+    print('anchors:       {}'.format(anchors))
+    anchor_x_meters = (math.fabs(anchors['a'][1] - anchors['b'][1])) * meters_per_degree_long(anchors['a'][0])
+    anchor_y_meters = (math.fabs(anchors['a'][0] - anchors['b'][0])) * meters_per_degree_lat()
+    print('anchor_x_meters:{}'.format(anchor_x_meters))
+    print('anchor_y_meters:{}'.format(anchor_y_meters))
 
     # How many pixels between anchors a and b on the map
     map_x_pixels = math.fabs(map['anchors']['a'][0] - map['anchors']['b'][0])
-    # print('pixels:       {}'.format(map_y_pixels))
+    map_y_pixels = math.fabs(map['anchors']['a'][1] - map['anchors']['b'][1])
+    print('map_x_pixels:  {}'.format(map_x_pixels))
+    print('map_y_pixels:  {}'.format(map_y_pixels))
 
     # How many meters per pixel on the map
-    map_meters_per_pixel = anchor_x_meters / map_x_pixels
-    # print('m/px:         {}'.format(map_meters_per_pixel))
+    map_x_meters_per_pixel = anchor_x_meters / map_x_pixels
+    map_y_meters_per_pixel = anchor_y_meters / map_y_pixels
+    print('meters_x/px:   {}'.format(map_x_meters_per_pixel))
+    print('meters_y/px:   {}'.format(map_y_meters_per_pixel))
 
-    print('zoom:         {}'.format(zoom_level))
-    zoom_meters_per_pixel = meters_per_pixel(anchors['a'][0], zoom_level)
-    # print('zoom m/px:    {}'.format(zoom_meters_per_pixel))
-    map_scale = map_meters_per_pixel/zoom_meters_per_pixel
+    print('zoom_level:    {}'.format(zoom_level))
+    zoom_x_meters_per_pixel = meters_long_per_pixel(anchors['a'][0], zoom_level)
+    print('zoom_x m/px:   {}'.format(zoom_x_meters_per_pixel))
+    zoom_y_meters_per_pixel = meters_lat_per_pixel(zoom_level)
+    print('zoom_y m/px:   {}'.format(zoom_y_meters_per_pixel))
 
-    print('scale:        {}'.format(map_scale))
-    return map_scale
+    map_x_scale = map_x_meters_per_pixel/zoom_x_meters_per_pixel
+    map_y_scale = map_y_meters_per_pixel/zoom_y_meters_per_pixel
+
+    print('map_x_scale:   {}'.format(map_x_scale))
+    print('map_y_scale:   {}'.format(map_y_scale))
+
+    print('--/compute_map_scale--\n')
+    return (map_x_scale, map_y_scale)
 
 
 def compute_anchor_rotation(anchors):
@@ -186,18 +274,20 @@ def latlong_for_pixel(pixel_xy, image_anchor, map_anchor, zoom_level):
 
     Returns: Tuple with (lat,long)
     '''
-    print('--latlong_for_pixel--')
-    print('pixel_xy:     {}'.format(pixel_xy))
-    print('image_anchor: {}'.format(image_anchor))
+
+    print('\n--latlong_for_pixel--')
+    print('pixel_xy:         {}'.format(pixel_xy))
+    print('map_anchor:       {}'.format(map_anchor))
+    print('image_anchor:     {}'.format(image_anchor))
 
     # Distance in pixels from image anchor to pixel
     distance_pixels = vec2_sub(pixel_xy, image_anchor)
-    print('distance_pixels: {}'.format(distance_pixels))
+    print('distance_pixels:  {}'.format(distance_pixels))
 
-    # convert distance in pixels to degrees
+    # Convert distance in pixels to degrees
     distance_degrees = (        
-        distance_pixels[1] * degrees_per_pixel(map_anchor[0], zoom_level),
-        distance_pixels[0] * degrees_per_pixel(map_anchor[0], zoom_level)
+        distance_pixels[1] * degrees_lat_per_pixel(zoom_level),
+        distance_pixels[0] * degrees_long_per_pixel(map_anchor[0], zoom_level)
     )
     
     print('distance_degrees: {}'.format(distance_degrees))
@@ -321,8 +411,8 @@ def generate_map_tiles(map, zoom_level, map_ul_latlong, map_lr_latlong):
     os.makedirs(filepath, exist_ok=True)
 
     print('{}'.format(filename))
-    print('map_ul_latlong: {}'.format(map_ul_latlong))
-    print('map_lr_latlong: {}'.format(map_lr_latlong))
+    print('map_ul_latlong:    {}'.format(map_ul_latlong))
+    print('map_lr_latlong:    {}'.format(map_lr_latlong))
 
     lr_tile_xy = deg2num(map_lr_latlong[0], map_lr_latlong[1], zoom_level)
     ul_tile_xy = deg2num(map_ul_latlong[0], map_ul_latlong[1], zoom_level)
@@ -330,19 +420,19 @@ def generate_map_tiles(map, zoom_level, map_ul_latlong, map_lr_latlong):
     
     delta_latlong = vec2_sub(map_ul_latlong, ul_tile_latlong)
     delta_pixels = (
-        delta_latlong[1] * pixels_per_degree(map_ul_latlong[0], zoom_level),
-        delta_latlong[0] * pixels_per_degree(map_ul_latlong[0], zoom_level)
+        delta_latlong[1] * pixels_per_degree_lat(zoom_level),
+        delta_latlong[0] * pixels_per_degree_long(map_ul_latlong[0], zoom_level)
     )
 
-    print('ul_tile_xy:      {}'.format(ul_tile_xy))
-    print('ul_tile_latlong: {}'.format(ul_tile_latlong))
+    print('ul_tile_xy:        {}'.format(ul_tile_xy))
+    print('ul_tile_latlong:   {}'.format(ul_tile_latlong))
     print('delta_latlong:     {}'.format(delta_latlong))
     print('delta_pixels:      {}'.format(delta_pixels))
 
     im = Image.open(filename)
     
 
-    pixel_y =  -delta_pixels[1]
+    pixel_y = -delta_pixels[1]
 
     i=0
     for y in range(ul_tile_xy[1], lr_tile_xy[1]+1):
@@ -389,7 +479,7 @@ def fit_map(map, zoom_level, anchors):
     im = Image.open(map['file']).convert('RGBA')
 
     # First, scale the image to work at the correct zoom level.
-    im_scaled = im.resize((int(round(im.width*map_scale)), int(round(im.height*map_scale))))
+    im_scaled = im.resize((int(round(im.width*map_scale[0])), int(round(im.height*map_scale[1]))))
     print('im_scaled dim: {}'.format((im_scaled.width, im_scaled.height)))
 
     map_scaled_center_pixels = (im_scaled.width/2, im_scaled.height/2)
@@ -397,10 +487,10 @@ def fit_map(map, zoom_level, anchors):
     print('map_scaled_center_latlong: {}'.format(map_scaled_center_latlong))
 
     # DEBUG: Draw anchors for debugging. Anchors must be scaled to zoom level.
-    draw_anchor(map_scaled_center_pixels, im_scaled, color='#00aa00', length=10*map_scale)
-    draw_anchor(vec2_scale(map['anchors']['a'], map_scale), im_scaled, length=10*map_scale)
-    draw_anchor(vec2_scale(map['anchors']['b'], map_scale), im_scaled, length=10*map_scale)
-    draw_anchor(vec2_scale(map['anchors']['c'], map_scale), im_scaled, length=10*map_scale)
+    draw_anchor(map_scaled_center_pixels, im_scaled, color='#00aa00', length=10*map_scale[0])
+    draw_anchor(vec2_scale(map['anchors']['a'], map_scale), im_scaled, length=10*map_scale[0])
+    draw_anchor(vec2_scale(map['anchors']['b'], map_scale), im_scaled, length=10*map_scale[0])
+    draw_anchor(vec2_scale(map['anchors']['c'], map_scale), im_scaled, length=10*map_scale[0])
 
     # Now rotate the image. Expand the image bounds so it fully fits in the rotated image.
     im_rotated = im_scaled.rotate(map_rotation, expand=True)
@@ -460,9 +550,9 @@ def test__latlong_for_pixel():
     map = {
             'file':'data/2022-oakland-debug.png',
             'anchors': {
-                'a': [517,850],
-                'b': [1265,987],
-                'c': [1340,1532]
+                'a': [819,837],
+                'b': [1192,905],
+                'c': [1230,1177]
             }
     }
 
@@ -472,16 +562,21 @@ def test__latlong_for_pixel():
         'c': [37.795135, -122.269526]
     }
 
+
+
     for zoom_level in range(14,15):
         print('====')
 
-        map_scale = compute_map_scale(map, zoom_level, anchors)
-        print('map_scale:     {}'.format(map_scale))
+        # map_scale = compute_map_scale(map, zoom_level, anchors)
+        # print('map_scale:     {}'.format(map_scale))
 
+        map_scale = compute_map_scale_2(map, zoom_level, anchors)
+        print('map_scale:   {}'.format(map_scale))
 
         print('anchor_a:      {}'.format(anchors['a']))
 
         pixel_xy = vec2_scale(map['anchors']['c'], map_scale)
+        print('pixel_xy:      {}'.format(pixel_xy))
         pixel_latlong = latlong_for_pixel(
             pixel_xy, 
             vec2_scale(map['anchors']['a'], map_scale),
@@ -490,7 +585,7 @@ def test__latlong_for_pixel():
         )
 
         print('pixel_latlong: {}'.format(pixel_latlong))
-        print('anchor_c:      {}'.format(anchors['c']))
+        print('known_latlong: {}'.format(anchors['c']))
 
         delta_latlong = vec2_sub(pixel_latlong, anchors['c'])
         print('delta_latlong: {}'.format(delta_latlong))
@@ -499,20 +594,20 @@ def test__latlong_for_pixel():
 
 def main():
 
-    # test__latlong_for_pixel()
-    # return
+    test__latlong_for_pixel()
+    return 
 
     #### For testing
     map = data['maps'][0]
-    # zoom_level = 13
-    # (map_ul_latlong, map_lr_latlong) = fit_map(map, zoom_level, data['anchors'])
+    zoom_level = 14
+    (map_ul_latlong, map_lr_latlong) = fit_map(map, zoom_level, data['anchors'])
     # generate_map_tiles(map, zoom_level, map_ul_latlong, map_lr_latlong)
 
 
-    # # # for map in data['maps']:
-    for zoom_level in range(13, 17):
-        (map_ul_latlong, map_lr_latlong) = fit_map(map, zoom_level, data['anchors'])
-        generate_map_tiles(map, zoom_level, map_ul_latlong, map_lr_latlong)
+    # for map in data['maps']:
+    # for zoom_level in range(16, 17):
+    #     (map_ul_latlong, map_lr_latlong) = fit_map(map, zoom_level, data['anchors'])
+    #     generate_map_tiles(map, zoom_level, map_ul_latlong, map_lr_latlong)
 
 if __name__ == '__main__':
     main()
