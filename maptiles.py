@@ -30,30 +30,30 @@ data = {
     },
 
     'maps': [
-        {
-            'file':'data/2022-oakland-annotated.png',
-            'anchors': {
-                'a': [804,466],
-                'b': [1178,533],
-                'c': [1214,807]
-            }
-        },
-        {
-            'file':'data/2022-oakland-annotated-offset.png',
-            'anchors': {
-                'a': [547,196],
-                'b': [921,264],
-                'c': [957,538]
-            }
-        },
-        {
-            'file':'data/2022-oakland-debug.png',
-            'anchors': {
-                'a': [819,837],
-                'b': [1192,905],
-                'c': [1230,1177]
-            }
-        },
+        # {
+        #     'file':'data/2022-oakland-annotated.png',
+        #     'anchors': {
+        #         'a': [804,466],
+        #         'b': [1178,533],
+        #         'c': [1214,807]
+        #     }
+        # },
+        # {
+        #     'file':'data/2022-oakland-annotated-offset.png',
+        #     'anchors': {
+        #         'a': [547,196],
+        #         'b': [921,264],
+        #         'c': [957,538]
+        #     }
+        # },
+        # {
+        #     'file':'data/2022-oakland-debug.png',
+        #     'anchors': {
+        #         'a': [819,837],
+        #         'b': [1192,905],
+        #         'c': [1230,1177]
+        #     }
+        # },
         {
             'file':'data/1868-oakland.jpg',
             'anchors': {
@@ -616,7 +616,6 @@ def main():
         for zoom_level in range(13, 17):
             (map_ul_latlong, map_lr_latlong) = fit_map(map, zoom_level, data['anchors'])
             generate_map_tiles(map, zoom_level, map_ul_latlong, map_lr_latlong)
-            return
 
 if __name__ == '__main__':
     main()
