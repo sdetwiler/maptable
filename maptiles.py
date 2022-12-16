@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 
-# https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Resolution_and_Scale
 
 
 import math
@@ -236,7 +235,6 @@ def compute_anchor_rotation(anchors):
     y = anchors['b'][0] - anchors['a'][0]   # latitude is y axis
     x = anchors['b'][1] - anchors['a'][1]   # longitude is x axis
     anchor_rotation = math.degrees(math.atan(y/x))
-    # print('anchor_rotation:     {}'.format(anchor_rotation))
     return anchor_rotation
 
 
@@ -280,7 +278,7 @@ def latlong_for_pixel(pixel_xy, image_anchor, map_anchor, zoom_level):
     
     print('distance_degrees: {}'.format(distance_degrees))
     pixel_latlong = (
-        map_anchor[0] - distance_degrees[0], # * math.cos(math.radians(map_anchor[0])),
+        map_anchor[0] - distance_degrees[0],
         (map_anchor[1] + distance_degrees[1])
     )
 
@@ -295,7 +293,6 @@ def rotate_around(point, origin, theta):
     print('origin: {}'.format(origin))
     print('theta:  {}'.format(theta))
     theta+=180
-    #theta*=-1
     
     s = origin[0] - point[0]
     t = origin[1] - point[1]
@@ -473,20 +470,17 @@ def fit_map(map, zoom_level, anchors):
     map_scaled_center_latlong = latlong_for_pixel(map_scaled_center_pixels, vec2_scale(map['anchors']['a'], map_scale), anchors['a'], zoom_level)
     print('map_scaled_center_latlong: {}'.format(map_scaled_center_latlong))
 
-    # DEBUG: Draw anchors for debugging. Anchors must be scaled to zoom level.
-    draw_anchor(map_scaled_center_pixels, im_scaled, color='#00aa00', length=10*map_scale[0])
-    draw_anchor(vec2_scale(map['anchors']['a'], map_scale), im_scaled, length=10*map_scale[0])
-    draw_anchor(vec2_scale(map['anchors']['b'], map_scale), im_scaled, length=10*map_scale[0])
-    draw_anchor(vec2_scale(map['anchors']['c'], map_scale), im_scaled, length=10*map_scale[0])
+    # # DEBUG: Draw anchors for debugging. Anchors must be scaled to zoom level.
+    # draw_anchor(map_scaled_center_pixels, im_scaled, color='#00aa00', length=10*map_scale[0])
+    # draw_anchor(vec2_scale(map['anchors']['a'], map_scale), im_scaled, length=10*map_scale[0])
+    # draw_anchor(vec2_scale(map['anchors']['b'], map_scale), im_scaled, length=10*map_scale[0])
+    # draw_anchor(vec2_scale(map['anchors']['c'], map_scale), im_scaled, length=10*map_scale[0])
 
     # Now rotate the image. Expand the image bounds so it fully fits in the rotated image.
     im_rotated = im_scaled.rotate(map_rotation, expand=True)
     im_rotated.save(output_filename)
 
     # The image has been rotated. Get the new pixel coordinates center which changes because the image was expanded.
-    map_rotated_center_pixels = (im_rotated.width/2, im_rotated.height/2)
-    # draw_anchor(map_rotated_center_pixels, im_rotated, color='#000000', length=10*map_scale[0])
-
     origin = (im_rotated.width/2, im_rotated.height/2)
     expand_delta = ((im_rotated.width-im_scaled.width)/2, (im_rotated.height-im_scaled.height)/2)
     print('expand_delta:  {}'.format(expand_delta))
@@ -500,18 +494,18 @@ def fit_map(map, zoom_level, anchors):
     rotated_lr_latlong = latlong_for_pixel((im_rotated.width, im_rotated.height), image_anchor, map_anchor, zoom_level)
     rotated_ll_latlong = latlong_for_pixel((0, im_rotated.height), image_anchor, map_anchor, zoom_level)
 
-    # DEBUG: Rotate anchors in pixel space and draw for debugging.
-    rotated_anchor_a = rotate_around(vec2_add(vec2_scale(map['anchors']['a'], map_scale), expand_delta), origin, map_rotation)
-    print('rotated_anchor_a: {}'.format(rotated_anchor_a))
-    draw_anchor(rotated_anchor_a, im_rotated, color='#00FFFF', length=10*map_scale[0])
+    # # DEBUG: Rotate anchors in pixel space and draw for debugging.
+    # rotated_anchor_a = rotate_around(vec2_add(vec2_scale(map['anchors']['a'], map_scale), expand_delta), origin, map_rotation)
+    # print('rotated_anchor_a: {}'.format(rotated_anchor_a))
+    # draw_anchor(rotated_anchor_a, im_rotated, color='#00FFFF', length=10*map_scale[0])
 
-    rotated_anchor_b = rotate_around(vec2_add(vec2_scale(map['anchors']['b'], map_scale), expand_delta), origin, map_rotation)
-    print('rotated_anchor_b: {}'.format(rotated_anchor_b))
-    draw_anchor(rotated_anchor_b, im_rotated, color='#00FFFF', length=10*map_scale[0])
+    # rotated_anchor_b = rotate_around(vec2_add(vec2_scale(map['anchors']['b'], map_scale), expand_delta), origin, map_rotation)
+    # print('rotated_anchor_b: {}'.format(rotated_anchor_b))
+    # draw_anchor(rotated_anchor_b, im_rotated, color='#00FFFF', length=10*map_scale[0])
 
-    rotated_anchor_c = rotate_around(vec2_add(vec2_scale(map['anchors']['c'], map_scale), expand_delta), origin, map_rotation)
-    print('rotated_anchor_c: {}'.format(rotated_anchor_c))
-    draw_anchor(rotated_anchor_c, im_rotated, color='#00FFFF', length=10*map_scale[0])
+    # rotated_anchor_c = rotate_around(vec2_add(vec2_scale(map['anchors']['c'], map_scale), expand_delta), origin, map_rotation)
+    # print('rotated_anchor_c: {}'.format(rotated_anchor_c))
+    # draw_anchor(rotated_anchor_c, im_rotated, color='#00FFFF', length=10*map_scale[0])
 
     im_rotated.save(output_filename)
 
@@ -609,20 +603,10 @@ def test__latlong_for_pixel():
 
 
 def main():
-
-    # test__rotate_around()
-    # return
-
-    # test__latlong_for_pixel()
-    # return 
-
-    #### For testing
-    map = data['maps'][6]
-
-    # for map in data['maps']:
-    for zoom_level in range(13, 17):
-        (map_ul_latlong, map_lr_latlong) = fit_map(map, zoom_level, data['anchors'])
-        generate_map_tiles(map, zoom_level, map_ul_latlong, map_lr_latlong)
+    for map in data['maps']:
+        for zoom_level in range(13, 17):
+            (map_ul_latlong, map_lr_latlong) = fit_map(map, zoom_level, data['anchors'])
+            generate_map_tiles(map, zoom_level, map_ul_latlong, map_lr_latlong)
 
 if __name__ == '__main__':
     main()
