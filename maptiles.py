@@ -23,94 +23,8 @@ TILE_PATH = 'site/assets/tiles'
 # b  San Pablo and Broadway      @37.804334, -122.271155
 # c  Jackson and 4th street      @37.795135, -122.269526
 
-data = { 
-    'anchors': {
-        'a': [37.806645, -122.287200],
-        'b': [37.804334, -122.271155],
-        'c': [37.795135, -122.269526]
-    },
 
-    'maps': [
-        # {
-        #     'file':'data/2022-oakland-annotated.png',
-        #     'anchors': {
-        #         'a': [804,466],
-        #         'b': [1178,533],
-        #         'c': [1214,807]
-        #     }
-        # },
-        # {
-        #     'file':'data/2022-oakland-annotated-offset.png',
-        #     'anchors': {
-        #         'a': [547,196],
-        #         'b': [921,264],
-        #         'c': [957,538]
-        #     }
-        # },
-        # {
-        #     'file':'data/2022-oakland-debug.png',
-        #     'anchors': {
-        #         'a': [819,837],
-        #         'b': [1192,905],
-        #         'c': [1230,1177]
-        #     }
-        # },
-        {
-            'file':'data/1868-oakland.jpg',
-            'anchors': {
-                'a': [3350,2915],
-                'b': [4326,2810],
-                'c': [4626,3474]
-            }
-        },
-        {
-            'file':'data/1876-oakland.jpg',
-            'anchors': {
-                'a': [1906,1946],
-                'b': [2324,1821],
-                'c': [2501,2086]
-            }
-        },
-        {
-            'file':'data/1898-oakland.jpg',
-            'anchors': {
-                'a': [550,1260],
-                'b': [837,1310],
-                'c': [870,1512]
-            }
-        },
-        {
-            'file':'data/1899-oakland.jpg',
-            'anchors': {
-                'a': [3143,4764],
-                'b': [3743,4576],
-                'c': [4004,4951]
-            }
-        }
-        # ,
-        # {
-        #     'file':'data/1899-oakland-rotated.png',
-        #     'anchors': {
-        #         'a': [3660,5656],
-        #         'b': [4279,5752],
-        #         'c': [4352,6194]
-        #     }
-        # }
-
-        # ,
-        # {
-        #     'file':'data/1912-oakland-terminal-railways.jpg',
-        #     'anchors': {
-        #         'a': [711,786],
-        #         'b': [743,812],
-        #         'c': [714,839]
-        #     }
-        # }
-
-
-    ]
-}
-
+data = None
 
 def vec2_add(a, b):
     return (a[0]+b[0], a[1]+b[1])
@@ -613,8 +527,7 @@ def test__latlong_for_pixel():
 
 
 def generate_manifest():
-    
-    data = json.load(open('config.json', 'r'))
+    global data    
 
     manifest = {
         'maps':[]
@@ -635,15 +548,21 @@ def generate_manifest():
     f.close()
 
 
-def main():
+def load_config():
+    global data
+    data = json.load(open('config.json', 'r'))
 
-    generate_manifest()
-    return
+
+def main():
+    load_config()
 
     for map in data['maps']:
         for zoom_level in range(13, 17):
             (map_ul_latlong, map_lr_latlong) = fit_map(map, zoom_level, data['anchors'])
             generate_map_tiles(map, zoom_level, map_ul_latlong, map_lr_latlong)
+
+    generate_manifest()
+
 
 if __name__ == '__main__':
     main()
