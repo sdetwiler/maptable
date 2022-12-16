@@ -1,0 +1,80 @@
+<html>
+<head>
+    <link rel="stylesheet" href="assets/css/style.css"/>
+
+    <link rel="stylesheet" href="assets/leaflet/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
+    <script src="assets/leaflet/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+</head>
+
+<div id="content">
+    <div id="map"></div>
+    <div id="controls">
+        <div class="mapItem" enabled="0" onclick="addRemoveLayer('1868-oakland')">Oakland 1868</div>
+        <div class="mapItem" enabled="0" onclick="addRemoveLayer('1876-oakland')">Oakland 1876</div>
+        <div class="mapItem" enabled="0" onclick="addRemoveLayer('1898-oakland')">Oakland 1898</div>
+        <div class="mapItem" enabled="0" onclick="addRemoveLayer('1899-oakland')">Oakland 1899</div>
+        <div class="controlsFooter">Map Table v1.0.0</div>
+    </div>
+</div>
+
+
+
+<script>
+    var map = L.map('map').setView([37.804334, -122.271155], 13);
+    map.setMinZoom(13)
+    map.setMaxZoom(16)
+
+
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+      }).addTo(map);
+
+
+
+    var layers = {}
+    function addLayer(name)
+    {
+        var layer = null;
+        if(name in layers)
+        {
+            layer = layers[name];
+        }
+        else
+        {
+            layer = L.tileLayer("assets/tiles/" + name + "/{z}/{x}/{y}.png");
+            layers[name] = layer;
+        }
+        layer.addTo(map);
+    }
+
+    function removeLayer(name)
+    {
+        if(name in layers)
+        {
+            layer = layers[name];
+            layer.removeFrom(map);
+        }
+    }
+
+    function addRemoveLayer(name)
+    {
+        console.log(event.target);
+        var enabled = event.target.getAttribute("enabled");
+        if(enabled == "0")
+        {
+            addLayer(name)
+            event.target.setAttribute("enabled", "1");
+            event.target.setAttribute("class", "mapItemEnabled");
+        }
+        else
+        {
+            removeLayer(name);
+            event.target.setAttribute("enabled", "0");
+            event.target.setAttribute("class", "mapItem");
+        }
+    }
+
+</script>
+    
+</html>

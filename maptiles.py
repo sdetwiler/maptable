@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-
-
-
 import math
 import os
 
@@ -17,6 +14,8 @@ CIRCUMFERENCE_METERS = 2 * math.pi * RADIUS_METERS
 EPSILON = 1e-14
 TILE_WIDTH_PIXELS = 256
 
+
+TILE_PATH = 'site/assets/tiles'
 
 # Reference Anchors
 # a  Adeline and 10th street     @37.806645, -122.287200
@@ -329,9 +328,17 @@ def draw_anchor(anchor, im, color='#ff0000', length=10):
     draw.line([vs,ve], fill=color, width=int(length/10.0)*6)
 
 
-def filepath_for_map(map):
+def filepath_for_tiles(map):
+    # Remove file extension.
     tokens = map['file'].split('.')
     filepath = '.'.join(tokens[0:-1])
+
+    # Remove leading path.
+    tokens = filepath.split('/')
+    filepath = '.'.join(tokens[1:])
+
+    # Prepend tile path.
+    filepath = os.path.join(TILE_PATH, filepath)
     
     return filepath
 
@@ -393,8 +400,9 @@ def ul_latlong_for_tile(xtile, ytile, zoom):
 def generate_map_tiles(map, zoom_level, map_ul_latlong, map_lr_latlong):
     print('\ngenerate_map_tiles\n-------')
     filename = filename_for_zoom_level(map, zoom_level)
-    filepath = filepath_for_map(map)
+    filepath = filepath_for_tiles(map)
     filepath = os.path.join(filepath, str(zoom_level))
+    print('filepath:          {}'.format(filepath))
     os.makedirs(filepath, exist_ok=True)
 
     print('{}'.format(filename))
@@ -418,7 +426,7 @@ def generate_map_tiles(map, zoom_level, map_ul_latlong, map_lr_latlong):
 
     im = Image.open(filename)
     
-    pixel_y = delta_pixels[1] * (0.5+math.cos(math.radians(map_ul_latlong[0])))
+    pixel_y = delta_pixels[1] * (0.5+math.cos(math.radians(map_ul_latlong[0]))) # SCD: These offsets are still weird.
 
     i=0
     for y in range(ul_tile_xy[1], lr_tile_xy[1]+1):
@@ -608,6 +616,7 @@ def main():
         for zoom_level in range(13, 17):
             (map_ul_latlong, map_lr_latlong) = fit_map(map, zoom_level, data['anchors'])
             generate_map_tiles(map, zoom_level, map_ul_latlong, map_lr_latlong)
+            return
 
 if __name__ == '__main__':
     main()

@@ -1,0 +1,70 @@
+@font-face
+{
+    font-family: 'Libre Baskerville';
+    src: url('/assets/fonts/baskervville-v1-latin-regular.woff');
+}
+body
+{
+    background-color:#ffffff;
+    font-family: 'Libre Baskerville';
+
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+}
+
+
+#content {
+    width:100%;
+    height:100%;
+}
+#map {
+    width: 89%;
+    height: 100%;
+    background-color: #cccccc;
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+#controls {
+    width:10%;
+    height:100%;
+    vertical-align: top;
+    background-color: #aaaaaa;
+    display: inline-block;
+    overflow-y: scroll;
+    overflow-x:hidden;
+    position:relative;
+}
+
+.controlsFooter {
+    position:absolute;
+    bottom: 5;
+    right: 5;
+    text-align: right;
+    width:100%;
+    color:white;
+}
+
+.mapItem {
+    font-size: 1.5em;
+    cursor: pointer;
+    display: block;
+    width:100%;
+    margin: 0;
+    padding: 10;
+    color:white;
+}
+.mapItemEnabled {
+    font-size: 1.5em;
+    cursor: pointer;
+    display: block;
+    width:100%;
+    margin: 0;
+    padding: 10;
+    color:white;
+    font-weight: bold;
+}
+
