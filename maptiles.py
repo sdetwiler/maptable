@@ -2,6 +2,7 @@
 
 import math
 import os
+import json
 
 from PIL import Image, ImageDraw
 
@@ -611,7 +612,34 @@ def test__latlong_for_pixel():
         print('known_tile_xy: {}'.format(known_tile_xy))
 
 
+def generate_manifest():
+    
+    data = json.load(open('config.json', 'r'))
+
+    manifest = {
+        'maps':[]
+    }
+
+    for map in data['maps']:
+        manifest['maps'].append(
+            {
+                'path': '/'.join(filepath_for_tiles(map).split('/')[1:]), # remove leading 'site' dir from path.
+                'name': map['name'],
+                'attribution':map['attribution']
+            }
+        )
+
+    manifest_filename = os.path.join(TILE_PATH, 'manifest.json')
+    f = open(manifest_filename, 'w')
+    f.write(json.dumps(manifest, indent=2))
+    f.close()
+
+
 def main():
+
+    generate_manifest()
+    return
+
     for map in data['maps']:
         for zoom_level in range(13, 17):
             (map_ul_latlong, map_lr_latlong) = fit_map(map, zoom_level, data['anchors'])

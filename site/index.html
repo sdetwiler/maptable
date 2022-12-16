@@ -1,5 +1,6 @@
 <html>
 <head>
+    <title>Map Table</title>
     <link rel="stylesheet" href="assets/css/style.css"/>
 
     <link rel="stylesheet" href="assets/leaflet/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
@@ -9,10 +10,6 @@
 <div id="content">
     <div id="map"></div>
     <div id="controls">
-        <div class="mapItem" enabled="0" onclick="addRemoveLayer('1868-oakland')">Oakland 1868</div>
-        <div class="mapItem" enabled="0" onclick="addRemoveLayer('1876-oakland')">Oakland 1876</div>
-        <div class="mapItem" enabled="0" onclick="addRemoveLayer('1898-oakland')">Oakland 1898</div>
-        <div class="mapItem" enabled="0" onclick="addRemoveLayer('1899-oakland')">Oakland 1899</div>
         <div class="controlsFooter">Map Table v1.0.0</div>
     </div>
 </div>
@@ -20,60 +17,97 @@
 
 
 <script>
+    var manifest = null;
+
     var map = L.map('map').setView([37.804334, -122.271155], 13);
     map.setMinZoom(13)
     map.setMaxZoom(16)
-
-
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
       }).addTo(map);
 
-
-
     var layers = {}
-    function addLayer(name)
+    function addLayer(idx)
     {
         var layer = null;
-        if(name in layers)
+        if(idx in layers)
         {
-            layer = layers[name];
+            layer = layers[idx];
         }
         else
         {
-            layer = L.tileLayer("assets/tiles/" + name + "/{z}/{x}/{y}.png");
-            layers[name] = layer;
+            var m = manifest["maps"][idx];
+            layer = L.tileLayer(m["path"] + "/{z}/{x}/{y}.png", {
+                attribution: m["attribution"]
+            });
+            layers[idx] = layer;
         }
         layer.addTo(map);
     }
 
-    function removeLayer(name)
+    function removeLayer(idx)
     {
-        if(name in layers)
+        if(idx in layers)
         {
-            layer = layers[name];
+            layer = layers[idx];
             layer.removeFrom(map);
         }
     }
 
-    function addRemoveLayer(name)
+    function addRemoveLayer(idx)
     {
         console.log(event.target);
         var enabled = event.target.getAttribute("enabled");
         if(enabled == "0")
         {
-            addLayer(name)
+            addLayer(idx)
             event.target.setAttribute("enabled", "1");
             event.target.setAttribute("class", "mapItemEnabled");
         }
         else
         {
-            removeLayer(name);
+            removeLayer(idx);
             event.target.setAttribute("enabled", "0");
             event.target.setAttribute("class", "mapItem");
         }
     }
+
+    function addMapItemByIndex(idx)
+    {
+        var m = manifest["maps"][idx];
+        console.log(m);
+        var controls = document.getElementById("controls");
+        var mapItem = document.createElement("div");
+        mapItem.setAttribute("enabled", "0");
+        mapItem.setAttribute("class", "mapItem");
+        mapItem.setAttribute("onclick", "addRemoveLayer(" +idx + ")");
+        mapItem.innerText = m["name"];
+        controls.appendChild(mapItem);
+    }
+
+    function loadManifest()
+    {
+        var req = new XMLHttpRequest();
+        req.overrideMimeType("application/json");
+        req.open("GET", "assets/tiles/manifest.json", true);
+        req.onload  = function() {
+            manifest = JSON.parse(req.responseText);
+            for(i=0; i<manifest["maps"].length; ++i)
+            {
+                addMapItemByIndex(i);
+            }
+        };
+        req.send(null);        
+    }
+
+    function init()
+    {
+        console.log("init");
+        loadManifest();
+    }
+
+    document.addEventListener("DOMContentLoaded", init);
 
 </script>
     
