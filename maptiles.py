@@ -538,7 +538,8 @@ def generate_manifest():
             {
                 'path': '/'.join(filepath_for_tiles(map).split('/')[1:]), # remove leading 'site' dir from path.
                 'name': map['name'],
-                'attribution':map['attribution']
+                'attribution':map['attribution'],
+                'license':map['license']
             }
         )
 
@@ -556,15 +557,15 @@ def load_config():
 def main():
     load_config()
 
-    for map in data['maps']:
-        for zoom_level in range(13, 17):
+    # for map in data['maps']:
+    #     for zoom_level in range(13, 17):
 
-            map_filename = filename_for_zoom_level(map, zoom_level)
-            if os.path.exists(map_filename) == False:
-                (map_ul_latlong, map_lr_latlong) = fit_map(map, zoom_level, data['anchors'])
-                generate_map_tiles(map, zoom_level, map_ul_latlong, map_lr_latlong)
-            else:
-                print('Skipping:    {}'.format(map_filename))
+    #         map_filename = filename_for_zoom_level(map, zoom_level)
+    #         if os.path.exists(map_filename) == False:
+    #             (map_ul_latlong, map_lr_latlong) = fit_map(map, zoom_level, data['anchors'])
+    #             generate_map_tiles(map, zoom_level, map_ul_latlong, map_lr_latlong)
+    #         else:
+    #             print('Skipping:    {}'.format(map_filename))
 
     generate_manifest()
 

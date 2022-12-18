@@ -10,6 +10,7 @@
             "file": "data/1868-oakland.jpg",
             "name": "Oakland 1868",
             "attribution": "<a href='https://purl.stanford.edu/by678mk5298'>Stanford Digital Repository</a>",
+            "license": "Creative Commons Public Domain",
             "anchors": {
                 "a": [3350,2915],
                 "b": [4326,2810],
@@ -20,6 +21,7 @@
             "file":"data/1876-oakland.jpg",
             "name":"Oakland 1876",
             "attribution": "<a href='https://www.davidrumsey.com/luna/servlet/detail/RUMSEY~8~1~205210~3002334:Map-of-Oakland%2C-Alameda-and-Vicinit?sort=Pub_List_No_InitialSort%2CPub_Date%2CPub_List_No%2CSeries_No&qvq=w4s:/where%2FOakland%2B(Calif.);q:Oakland;sort:Pub_List_No_InitialSort%2CPub_Date%2CPub_List_No%2CSeries_No;lc:RUMSEY~8~1&mi=4&trs=182#'>David Rumsey Map Collection</a>",
+            "license": "",
             "anchors": {
                 "a": [1906,1946],
                 "b": [2324,1821],
@@ -30,6 +32,7 @@
             "file":"data/1884-oakland.jpg",
             "name":"Oakland 1884",
             "attribution": "<a href='https://www.davidrumsey.com/luna/servlet/detail/RUMSEY~8~1~29564~1130609:Oakland%2C-Berkeley%2C-Alameda-?sort=Pub_List_No_InitialSort%2CPub_Date%2CPub_List_No%2CSeries_No&qvq=w4s:/where%2FOakland%2B(Calif.);q:Oakland;sort:Pub_List_No_InitialSort%2CPub_Date%2CPub_List_No%2CSeries_No;lc:RUMSEY~8~1&mi=46&trs=182#'>David Rumsey Map Collection</a>",
+            "license":"",
             "anchors": {
                 "a": [3857,4847],
                 "b": [4512,4612],
@@ -40,6 +43,7 @@
             "file":"data/1888-oakland.jpg",
             "name":"Oakland 1888",
             "attribution": "<a href='https://www.davidrumsey.com/luna/servlet/detail/RUMSEY~8~1~243502~5513462:Map-of-the-City-of-Oakland-and-Surr?sort=Pub_List_No_InitialSort%2CPub_Date%2CPub_List_No%2CSeries_No&qvq=q:Oakland%20ca;sort:Pub_List_No_InitialSort%2CPub_Date%2CPub_List_No%2CSeries_No;lc:RUMSEY~8~1&mi=0&trs=173#'>David Rumsey Map Collection</a>",
+            "license":"",
             "anchors": {
                 "a": [4096,5338],
                 "b": [4777,5138],
@@ -50,6 +54,7 @@
             "file":"data/1889-oakland.jpg",
             "name":"Oakland 1889",
             "attribution": "<a href='https://www.davidrumsey.com/luna/servlet/detail/RUMSEY~8~1~289037~90060562:Map-of-the-City-of-Oakland%2C-Berkele?sort=Pub_List_No_InitialSort%2CPub_Date%2CPub_List_No%2CSeries_No&qvq=w4s:/where%2FOakland%2B(Calif.);q:Oakland;sort:Pub_List_No_InitialSort%2CPub_Date%2CPub_List_No%2CSeries_No;lc:RUMSEY~8~1&mi=181&trs=182#'>David Rumsey Map Collection</a>",
+            "license":"",
             "anchors": {
                 "a": [3529,4490],
                 "b": [4171,4420],
@@ -60,6 +65,7 @@
             "file":"data/1898-oakland.jpg",
             "name":"Oakland 1898",
             "attribution": "<a href='https://purl.stanford.edu/tr564jm1254'>Stanford Digital Repository</a>",
+            "license": "Creative Commons Attribution-Noncommercial-Share Alike 3.0",
             "anchors": {
                 "a": [550,1260],
                 "b": [837,1310],
@@ -70,6 +76,7 @@
             "file":"data/1899-oakland.jpg",
             "name":"Oakland 1899",
             "attribution": "<a href='https://www.davidrumsey.com/luna/servlet/detail/RUMSEY~8~1~275209~90048562:Map-of-Oakland-and-vicinity%2C-Showin?sort=Pub_List_No_InitialSort%2CPub_Date%2CPub_List_No%2CSeries_No&qvq=w4s:/where%2FOakland%2B(Calif.);q:Oakland;sort:Pub_List_No_InitialSort%2CPub_Date%2CPub_List_No%2CSeries_No;lc:RUMSEY~8~1&mi=69&trs=182#'>David Rumsey Map Collection</a>",
+            "license":"",
             "anchors": {
                 "a": [3143,4764],
                 "b": [3743,4576],
@@ -80,6 +87,7 @@
             "file":"data/1899-oakland-2.png",
             "name":"Oakland 1899 (2)",
             "attribution": "<a href='https://purl.stanford.edu/qt396rp8279'>Stanford Digital Repository</a>",
+            "license": "Creative Commons Attribution-Noncommercial-Share Alike 3.0",
             "anchors": {
                 "a": [1653,1821],
                 "b": [1908,1777],
@@ -90,6 +98,7 @@
             "file":"data/1903-oakland.jpg",
             "name":"Oakland 1903",
             "attribution": "<a href='https://purl.stanford.edu/dd738hv8870'>Stanford Digital Repository</a>",
+            "license": "Creative Commons Attribution-Noncommercial-Share Alike 3.0",
             "anchors": {
                 "a": [2460,3773],
                 "b": [2939,3618],
@@ -100,6 +109,7 @@
             "file":"data/1905-oakland.jpg",
             "name":"Oakland 1905",
             "attribution": "<a href='https://purl.stanford.edu/zc599xy4139'>Stanford Digital Repository</a>",
+            "license": "Creative Commons Public Domain",
             "anchors": {
                 "a": [3755,5500],
                 "b": [4426,5297],
@@ -110,6 +120,7 @@
             "file":"data/1906-oakland.jpg",
             "name":"Oakland 1906",
             "attribution": "<a href='https://purl.stanford.edu/bq150fx9908'>Stanford Digital Repository</a>",
+            "license": "Creative Commons Attribution-Noncommercial-Share Alike 3.0",
             "anchors": {
                 "a": [4108,5691],
                 "b": [4865,5382],

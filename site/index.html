@@ -43,8 +43,8 @@
                         </div>
                         <div class="row p-2">
                             <div class="btn-group" role="group" aria-label="Basic example">
-                                <button type="button" class="btn btn-primary">Bring to Front</button>
-                                <button type="button" class="btn btn-primary">Send to Back</button>
+                                <button type="button" class="btn btn-primary" onclick="layerBringToFront()">Bring to Front</button>
+                                <button type="button" class="btn btn-primary" onclick="layerSendToBack()">Send to Back</button>
                               </div>                            
                         </div>
 
@@ -81,7 +81,7 @@
     map.setMinZoom(13)
     map.setMaxZoom(16)
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    var modernLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
       }).addTo(map);
 
@@ -113,66 +113,83 @@
         }
     }
 
-    function addRemoveLayer(idx)
-    {
-        console.log("addRemoveLayer: " + idx);
-
-        if(idx == activeLayer)
-        {
-            removeLayer(idx);
-            toggleMapItemEnabled(idx);
-        }
-        else
-        {
-            addLayer(idx)
-        }
-    }
 
     function setActiveLayer(idx)
     {
         console.log("setActiveLayer: " + idx);
+        activeLayer = idx;
 
-        var mapItem = document.getElementById("mapItem_"+idx);
-        if(mapItem.getAttribute("enabled") == "0")
-        {
-            toggleMapItemEnabled(idx);
-        }
+        enableMapItem(activeLayer);
+        addLayer(activeLayer);
 
         var mapDetailsName = document.getElementById("mapDetailsName");
         var mapDetailsSource = document.getElementById("mapDetailsSource");
         var mapDetailsLicense = document.getElementById("mapDetailsLicense");
         var mapDetailsEnabled = document.getElementById("mapDetailsEnabled");
+        var mapDetailsOpacity = document.getElementById("mapDetailsOpacity");
 
-        var m = manifest["maps"][idx];
+        var m = manifest["maps"][activeLayer];
 
         mapDetailsName.innerText = m["name"];
         mapDetailsSource.innerHTML = m["attribution"];
+        mapDetailsLicense.innerHTML = m["license"];
         mapDetailsEnabled.checked = true;
 
-        activeLayer = idx;
-        addLayer(activeLayer);
+        var layer = layers[activeLayer];
+        mapDetailsOpacity.value = layer.options.opacity;
+        console.log(mapDetailsOpacity.value);
+
     }
 
-    function toggleMapItemEnabled(idx)
+
+    function enableMapItem(idx)
     {
-        console.log("toggleMapItemEnabled " + idx);
+        console.log("enableMapItem " + idx);
         var mapItem = document.getElementById("mapItem_" + idx);
-        if(mapItem.getAttribute("enabled") == "1")
-        {
-            mapItem.setAttribute("enabled", "0");
-            mapItem.setAttribute("class", "mapItem");
-        }
-        else
-        {
-            mapItem.setAttribute("enabled", "1")
-            mapItem.setAttribute("class", "mapItemEnabled");
-        }
+        mapItem.setAttribute("enabled", "1")
+        mapItem.setAttribute("class", "mapItemEnabled");
 
     }
+
+    function disableMapItem(idx)
+    {
+        console.log("disableMapItem " + idx);
+        var mapItem = document.getElementById("mapItem_" + idx);
+        mapItem.setAttribute("enabled", "0")
+        mapItem.setAttribute("class", "mapItem");
+
+    }
+
 
     function toggleLayerEnabled()
     {
-        addRemoveLayer(activeLayer);
+        console.log("toggleLayerEnabled: " + activeLayer);
+
+        var mapItem = document.getElementById("mapItem_" + activeLayer);
+        if(mapItem.getAttribute("enabled") == "1")
+        {
+            removeLayer(activeLayer);
+            disableMapItem(activeLayer);
+        }
+
+        else
+        {
+            addLayer(activeLayer);
+            enableMapItem(activeLayer);
+        }
+    }
+
+    function layerBringToFront()
+    {
+        var layer = layers[activeLayer];
+        layer.bringToFront();
+    }
+
+    function layerSendToBack()
+    {
+        var layer = layers[activeLayer];
+        layer.bringToBack();
+        modernLayer.bringToBack();
     }
 
     function setLayerOpacity()
