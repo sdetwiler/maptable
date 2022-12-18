@@ -69,7 +69,8 @@ body
 .mapDetailsLabel {
     font-weight: bold;
 }
-.mapDetailsName {
+
+#mapDetailsName {
     font-size: 24pt;
 }
 

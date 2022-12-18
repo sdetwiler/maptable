@@ -17,25 +17,28 @@
                     <img src="assets/images/compass-white.png" /> Map Table
                 </div>
                 
-                <div id="controls" class="mb-auto p-0 w-100 ">
+                <div id="controls" class="mb-auto p-0 w-100">
+                    <div class="text-end">v1.1.0</div>
                     <hr>
                 </div>
                 
                 <div id="mapDetails" class="w-100 align-items-end">
                     <div class="container-fluid">
                         <div class="row">
-                            <div class="col-12 mapDetailsName">Oakland 1868</div>
+                            <div id="mapDetailsName" class="col-12">Oakland 1868</div>
                         </div>
                         <div class="row p-2">
-                            <div class="col-3 mapDetailsLabel">Enabled</div>
-                            <div class="col-9 form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"></div>
+                            <div class="col-3 mapDetailsLabel">
+                                <label for="mapDetailsEnabled" class="form-label mapDetailsLabel">Enabled</label>
+                            </div>
+                            <div class="col-9 form-check form-switch"><input id="mapDetailsEnabled" class="form-check-input" type="checkbox" role="switch" onchange="toggleLayerEnabled()"></div>
                         </div>
                         <div class="row p-2">
                             <div class="col-3">
-                                <label for="customRange1" class="form-label mapDetailsLabel">Opacity</label>
+                                <label for="mapDetailsOpacity" class="form-label mapDetailsLabel">Opacity</label>
                             </div>
                             <div class="col-9">
-                                <input type="range" class="form-range" id="customRange1">                            
+                                <input id="mapDetailsOpacity" type="range" class="form-range" min="0" max="1" step="0.1" value="1" onchange="setLayerOpacity()">
                             </div>
                         </div>
                         <div class="row p-2">
@@ -47,11 +50,11 @@
 
                         <div class="row mapDetailsAttributes">
                             <div class="col-4 mapDetailsLabel">Source</div>
-                            <div class="col-8">Stanford Digital Repository</div>
+                            <div id="mapDetailsSource" class="col-8">Stanford Digital Repository</div>
                         </div>
                         <div class="row mapDetailsAttributes">
                             <div class="col-4 mapDetailsLabel">License</div>
-                            <div class="col-8">Creative Commons</div>
+                            <div id="mapDetailsLicense" class="col-8">Creative Commons</div>
                         </div>
 
                     </div>
@@ -72,6 +75,7 @@
 
 <script>
     var manifest = null;
+    var activeLayer = null;
 
     var map = L.map('map').setView([37.804334, -122.271155], 13);
     map.setMinZoom(13)
@@ -93,7 +97,7 @@
         {
             var m = manifest["maps"][idx];
             layer = L.tileLayer(m["path"] + "/{z}/{x}/{y}.png", {
-                attribution: m["attribution"],
+                attribution: m["attribution"]
             });
             layers[idx] = layer;
         }
@@ -111,21 +115,91 @@
 
     function addRemoveLayer(idx)
     {
-        console.log(event.target);
-        var enabled = event.target.getAttribute("enabled");
-        if(enabled == "0")
+        console.log("addRemoveLayer: " + idx);
+
+        if(idx == activeLayer)
         {
-            addLayer(idx)
-            event.target.setAttribute("enabled", "1");
-            event.target.setAttribute("class", "mapItemEnabled");
+            removeLayer(idx);
+            toggleMapItemEnabled(idx);
         }
         else
         {
-            removeLayer(idx);
-            event.target.setAttribute("enabled", "0");
-            event.target.setAttribute("class", "mapItem");
+            addLayer(idx)
         }
     }
+
+    function setActiveLayer(idx)
+    {
+        console.log("setActiveLayer: " + idx);
+
+        var mapItem = document.getElementById("mapItem_"+idx);
+        if(mapItem.getAttribute("enabled") == "0")
+        {
+            toggleMapItemEnabled(idx);
+        }
+
+        var mapDetailsName = document.getElementById("mapDetailsName");
+        var mapDetailsSource = document.getElementById("mapDetailsSource");
+        var mapDetailsLicense = document.getElementById("mapDetailsLicense");
+        var mapDetailsEnabled = document.getElementById("mapDetailsEnabled");
+
+        var m = manifest["maps"][idx];
+
+        mapDetailsName.innerText = m["name"];
+        mapDetailsSource.innerHTML = m["attribution"];
+        mapDetailsEnabled.checked = true;
+
+        activeLayer = idx;
+        addLayer(activeLayer);
+    }
+
+    function toggleMapItemEnabled(idx)
+    {
+        console.log("toggleMapItemEnabled " + idx);
+        var mapItem = document.getElementById("mapItem_" + idx);
+        if(mapItem.getAttribute("enabled") == "1")
+        {
+            mapItem.setAttribute("enabled", "0");
+            mapItem.setAttribute("class", "mapItem");
+        }
+        else
+        {
+            mapItem.setAttribute("enabled", "1")
+            mapItem.setAttribute("class", "mapItemEnabled");
+        }
+
+    }
+
+    function toggleLayerEnabled()
+    {
+        addRemoveLayer(activeLayer);
+    }
+
+    function setLayerOpacity()
+    {
+        var v = event.target.value;
+        console.log("setLayerOpacity: " + v);
+        var idx = activeLayer;
+
+        var l = layers[idx];
+        if(v > 1)
+        {
+            v = 1;
+        }
+        else if(v < 0)
+        {
+            v = 0;
+        }
+
+        l.options.opacity = v;
+        l.redraw();
+    }
+
+    function disableLayer(idx)
+    {
+        removeLayer(idx);
+    }
+
 
     function addMapItemByIndex(idx)
     {
@@ -133,9 +207,11 @@
         console.log(m);
         var controls = document.getElementById("controls");
         var mapItem = document.createElement("div");
+        mapItem.setAttribute("id", "mapItem_"+idx);
         mapItem.setAttribute("enabled", "0");
         mapItem.setAttribute("class", "mapItem");
-        mapItem.setAttribute("onclick", "addRemoveLayer(" +idx + ")");
+        mapItem.setAttribute("layerId", idx);
+        mapItem.setAttribute("onclick", "setActiveLayer(\"" + idx + "\")");
         mapItem.innerText = m["name"];
         controls.appendChild(mapItem);
     }
