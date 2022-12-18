@@ -5,66 +5,102 @@
 }
 body
 {
-    background-color:#ffffff;
     font-family: 'Libre Baskerville';
-
-    margin: 0;
-    padding: 0;
-    border: 0;
-    overflow: hidden;
+    background-color: black;
 }
 
-
-#content {
-    width:100%;
-    height:100%;
-}
-#map {
-    width: 89%;
-    height: 100%;
-    background-color: #cccccc;
-    display: inline-block;
-    margin: 0;
-    padding: 0;
-    border: 0;
-}
-#controls {
-    width:10%;
-    height:100%;
-    vertical-align: top;
-    background-color: #aaaaaa;
-    display: inline-block;
-    overflow-y: scroll;
-    overflow-x:hidden;
-    position:relative;
+.h-1 {
+    height: 1% !important;
 }
 
-.controlsFooter {
-    position:absolute;
-    bottom: 5;
-    right: 5;
-    text-align: right;
-    width:100%;
+.h-9 {
+    height: 9% !important;
+}
+
+.h-10 {
+    height: 10% !important;
+}
+
+.h-15 {
+    height: 15% !important;
+}
+
+.h-65 {
+    height: 65% !important;
+}
+
+#sideMenu {
+    background-color: black;
     color:white;
 }
 
-.mapItem {
-    font-size: 1.5em;
-    cursor: pointer;
-    display: block;
-    width:100%;
-    margin: 0;
-    padding: 10;
-    color:white;
+#logo {
+    color: white;
+    height:100px;
+    font-size: 24px;
+    vertical-align: bottom;
+    padding-top:10px;
+    padding-bottom:20px;
+    margin-bottom:20px;
 }
-.mapItemEnabled {
-    font-size: 1.5em;
-    cursor: pointer;
-    display: block;
-    width:100%;
-    margin: 0;
-    padding: 10;
-    color:white;
+
+#logo img {
+    width:100px;
+    object-fit: contain;
+    margin:5px;
+
+}
+
+
+#mapDetails {
+    background: white;
+    color:black;
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+}
+.mapDetailsAttributes {
+    padding-left:10px;
+    padding-right: 10px;
+}
+
+.mapDetailsLabel {
     font-weight: bold;
+}
+.mapDetailsName {
+    font-size: 24pt;
+}
+
+.debug {
+    border: 1px solid red;
+}
+
+#controls {
+    margin:0;
+}
+
+#map {
+    width:100%;
+    height:100%;
+}
+.mapItem {
+    /* font-size: 1.5em; */
+    font-size:18pt;
+    margin-left:30px;
+    cursor: pointer;
+    display: block;
+    color:white;
+}
+
+
+.mapItemEnabled {
+    /* font-size: 1.5em; */
+    font-size:18pt;
+    margin-left:30px;
+    cursor: pointer;
+    color:orange;
+    font-weight: bolder;
 }
 

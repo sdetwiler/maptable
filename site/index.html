@@ -1,18 +1,72 @@
 <html>
 <head>
     <title>Map Table</title>
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="assets/css/style.css"/>
 
     <link rel="stylesheet" href="assets/leaflet/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
     <script src="assets/leaflet/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
 </head>
+<body>
+    <div class="container-fluid">
+        <div class="row h-100">
 
-<div id="content">
-    <div id="map"></div>
-    <div id="controls">
-        <div class="controlsFooter">Map Table v1.0.2</div>
+            <div id="sideMenu" class="col-2 d-flex align-items-start flex-column" style="height:100%">
+                
+                <div id="logo">
+                    <img src="assets/images/compass-white.png" /> Map Table
+                </div>
+                
+                <div id="controls" class="mb-auto p-0 w-100 ">
+                    <hr>
+                </div>
+                
+                <div id="mapDetails" class="w-100 align-items-end">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-12 mapDetailsName">Oakland 1868</div>
+                        </div>
+                        <div class="row p-2">
+                            <div class="col-3 mapDetailsLabel">Enabled</div>
+                            <div class="col-9 form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"></div>
+                        </div>
+                        <div class="row p-2">
+                            <div class="col-3">
+                                <label for="customRange1" class="form-label mapDetailsLabel">Opacity</label>
+                            </div>
+                            <div class="col-9">
+                                <input type="range" class="form-range" id="customRange1">                            
+                            </div>
+                        </div>
+                        <div class="row p-2">
+                            <div class="btn-group" role="group" aria-label="Basic example">
+                                <button type="button" class="btn btn-primary">Bring to Front</button>
+                                <button type="button" class="btn btn-primary">Send to Back</button>
+                              </div>                            
+                        </div>
+
+                        <div class="row mapDetailsAttributes">
+                            <div class="col-4 mapDetailsLabel">Source</div>
+                            <div class="col-8">Stanford Digital Repository</div>
+                        </div>
+                        <div class="row mapDetailsAttributes">
+                            <div class="col-4 mapDetailsLabel">License</div>
+                            <div class="col-8">Creative Commons</div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-10 vh-100">
+                <div id="map"></div>
+            </div>
+        </div>
     </div>
-</div>
+</body>
+
+
 
 
 
@@ -39,7 +93,7 @@
         {
             var m = manifest["maps"][idx];
             layer = L.tileLayer(m["path"] + "/{z}/{x}/{y}.png", {
-                attribution: m["attribution"]
+                attribution: m["attribution"],
             });
             layers[idx] = layer;
         }
