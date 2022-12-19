@@ -17,31 +17,33 @@
                     <img src="assets/images/compass-white.png" /> Map Table
                 </div>
                 
-                <div id="controls" class="mb-auto p-0 w-100">
-                    <div class="text-end">v1.1.0</div>
+                <div id="controls" class="mb-auto p-0 w-100 overflow-auto">
+                    <div class="text-end">v1.1.1</div>
                     <hr>
                 </div>
                 
                 <div id="mapDetails" class="w-100 align-items-end">
                     <div class="container-fluid">
                         <div class="row">
-                            <div id="mapDetailsName" class="col-12">Oakland 1868</div>
+                            <div id="mapDetailsName" class="col-12"></div>
                         </div>
-                        <div class="row p-2">
-                            <div class="col-3 mapDetailsLabel">
+                        <div class="row p-1">
+                            <div class="col-xl-5 col-lg-12 mapDetailsLabel">
                                 <label for="mapDetailsEnabled" class="form-label mapDetailsLabel">Enabled</label>
                             </div>
-                            <div class="col-9 form-check form-switch"><input id="mapDetailsEnabled" class="form-check-input" type="checkbox" role="switch" onchange="toggleLayerEnabled()"></div>
+                            <div class="col-xl-7 col-lg-12 form-check form-switch checkboxLeft">
+                                <input id="mapDetailsEnabled" class="form-check-input" type="checkbox" role="switch" onchange="toggleLayerEnabled()">
+                            </div>
                         </div>
-                        <div class="row p-2">
-                            <div class="col-3">
+                        <div class="row p-1">
+                            <div class="col-xl-5 col-lg-12 ">
                                 <label for="mapDetailsOpacity" class="form-label mapDetailsLabel">Opacity</label>
                             </div>
-                            <div class="col-9">
+                            <div class="col-xl-7 col-lg-12">
                                 <input id="mapDetailsOpacity" type="range" class="form-range" min="0" max="1" step="0.1" value="1" onchange="setLayerOpacity()">
                             </div>
                         </div>
-                        <div class="row p-2">
+                        <div class="row p-1">
                             <div class="btn-group" role="group" aria-label="Basic example">
                                 <button type="button" class="btn btn-primary" onclick="layerBringToFront()">Bring to Front</button>
                                 <button type="button" class="btn btn-primary" onclick="layerSendToBack()">Send to Back</button>
@@ -49,12 +51,12 @@
                         </div>
 
                         <div class="row mapDetailsAttributes">
-                            <div class="col-4 mapDetailsLabel">Source</div>
-                            <div id="mapDetailsSource" class="col-8">Stanford Digital Repository</div>
+                            <div class="col-xl-4 col-md-12 mapDetailsLabel">Source</div>
+                            <div id="mapDetailsSource" class="col-xl-8 col-md-12"></div>
                         </div>
                         <div class="row mapDetailsAttributes">
-                            <div class="col-4 mapDetailsLabel">License</div>
-                            <div id="mapDetailsLicense" class="col-8">Creative Commons</div>
+                            <div class="col-xl-4 col-md-12 mapDetailsLabel">License</div>
+                            <div id="mapDetailsLicense" class="col-8 col-md-12"></div>
                         </div>
 
                     </div>
@@ -211,12 +213,6 @@
         l.options.opacity = v;
         l.redraw();
     }
-
-    function disableLayer(idx)
-    {
-        removeLayer(idx);
-    }
-
 
     function addMapItemByIndex(idx)
     {

@@ -51,6 +51,9 @@ body
 
 }
 
+#controls {
+    margin-bottom: 10px;
+}
 
 #mapDetails {
     background: white;
