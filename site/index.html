@@ -8,69 +8,71 @@
     <script src="assets/leaflet/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
 </head>
 <body>
-    <div class="container-fluid">
-        <div class="row h-100">
+</div>
+<main class="d-flex flex-column flex-xl-row flex-nowrap">
+    <div class="d-flex flex-row flex-xl-column flex-shrink-0 p-2 text-bg-dark order-last order-xl-first sidebar">
+        <div id="logo" class="d-none d-xl-inline">
+            <img src="assets/images/compass-white.png"/> Map Table
+        </div>
+        <div class="d-none d-xl-inline">v1.2.0
+            <hr>
 
-            <div id="sideMenu" class="col-2 d-flex align-items-start flex-column" style="height:100%">
-                
-                <div id="logo">
-                    <img src="assets/images/compass-white.png" /> Map Table
+        </div>
+
+        <div id="controls" class=" overflow-auto h-100 p-2">
+        </div>
+
+        <div id="mapDetails" class="p-1">
+            <div class="container-fluid">
+                <div class="row">
+                    <div id="mapDetailsName" class="col-12"></div>
                 </div>
-                
-                <div id="controls" class="mb-auto p-0 w-100 overflow-auto">
-                    <div class="text-end">v1.1.1</div>
-                    <hr>
-                </div>
-                
-                <div id="mapDetails" class="w-100 align-items-end">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div id="mapDetailsName" class="col-12"></div>
-                        </div>
-                        <div class="row p-1">
-                            <div class="col-xl-5 col-lg-12 mapDetailsLabel">
-                                <label for="mapDetailsEnabled" class="form-label mapDetailsLabel">Enabled</label>
-                            </div>
-                            <div class="col-xl-7 col-lg-12 form-check form-switch checkboxLeft">
-                                <input id="mapDetailsEnabled" class="form-check-input" type="checkbox" role="switch" onchange="toggleLayerEnabled()">
-                            </div>
-                        </div>
-                        <div class="row p-1">
-                            <div class="col-xl-5 col-lg-12 ">
-                                <label for="mapDetailsOpacity" class="form-label mapDetailsLabel">Opacity</label>
-                            </div>
-                            <div class="col-xl-7 col-lg-12">
-                                <input id="mapDetailsOpacity" type="range" class="form-range" min="0" max="1" step="0.1" value="1" onchange="setLayerOpacity()">
-                            </div>
-                        </div>
-                        <div class="row p-1">
-                            <div class="btn-group" role="group" aria-label="Basic example">
-                                <button type="button" class="btn btn-primary" onclick="layerBringToFront()">Bring to Front</button>
-                                <button type="button" class="btn btn-primary" onclick="layerSendToBack()">Send to Back</button>
-                              </div>                            
-                        </div>
-
-                        <div class="row mapDetailsAttributes">
-                            <div class="col-xl-4 col-md-12 mapDetailsLabel">Source</div>
-                            <div id="mapDetailsSource" class="col-xl-8 col-md-12"></div>
-                        </div>
-                        <div class="row mapDetailsAttributes">
-                            <div class="col-xl-4 col-md-12 mapDetailsLabel">License</div>
-                            <div id="mapDetailsLicense" class="col-8 col-md-12"></div>
-                        </div>
-
+                <div class="row p-1">
+                    <div class="col-xl-5 col-lg-12 mapDetailsLabel">
+                        <label for="mapDetailsEnabled" class="form-label mapDetailsLabel">Enabled</label>
                     </div>
-
+                    <div class="col-xl-7 col-lg-12 form-check form-switch checkboxLeft">
+                        <input id="mapDetailsEnabled" class="form-check-input" type="checkbox" role="switch" onchange="toggleLayerEnabled()">
+                    </div>
                 </div>
+                <div class="row p-1">
+                    <div class="col-xl-5 col-lg-12 ">
+                        <label for="mapDetailsOpacity" class="form-label mapDetailsLabel">Opacity</label>
+                    </div>
+                    <div class="col-xl-7 col-lg-12">
+                        <input id="mapDetailsOpacity" type="range" class="form-range" min="0" max="1" step="0.1" value="1" onchange="setLayerOpacity()">
+                    </div>
+                </div>
+                <div class="row p-1">
+                    <div class="btn-group" role="group" aria-label="Basic example">
+                        <button type="button" class="btn btn-primary" onclick="layerBringToFront()">Bring Front</button>
+                        <button type="button" class="btn btn-primary" onclick="layerSendToBack()">Send Back</button>
+                      </div>                            
+                </div>
+
+                <div class="row mapDetailsAttributes">
+                    <div class="col-xl-4 col-md-12 mapDetailsLabel">
+                    <a href="" id="mapDetailsSource" class="col-xl-8 col-md-12">Source</a>
+                    </div>
+                </div>
+                <!-- <div class="row mapDetailsAttributes">
+                    <div class="col-xl-4 col-md-12 mapDetailsLabel">License</div>
+                    <div id="mapDetailsLicense" class="col-8 col-md-12"></div>
+                </div> -->
+
             </div>
 
-            <div class="col-10 vh-100">
-                <div id="map"></div>
-            </div>
+
+
         </div>
     </div>
-</body>
+    
 
+    <div class="d-flex map" id="map">
+    </div>
+
+</main>
+</body>
 
 
 
@@ -94,16 +96,19 @@
         if(idx in layers)
         {
             layer = layers[idx];
+            layer.addTo(map);
         }
         else
         {
             var m = manifest["maps"][idx];
+            var attribution = "<a href='" + m["attribution"] + "'>"+m["source"]+"</a>";
             layer = L.tileLayer(m["path"] + "/{z}/{x}/{y}.png", {
-                attribution: m["attribution"]
+                attribution: attribution
             });
             layers[idx] = layer;
+            layer.addTo(map);
+            layer.bringToFront();
         }
-        layer.addTo(map);
     }
 
     function removeLayer(idx)
@@ -133,8 +138,8 @@
         var m = manifest["maps"][activeLayer];
 
         mapDetailsName.innerText = m["name"];
-        mapDetailsSource.innerHTML = m["attribution"];
-        mapDetailsLicense.innerHTML = m["license"];
+        mapDetailsSource.setAttribute("href", m["attribution"]);
+        // mapDetailsLicense.innerHTML = m["license"];
         mapDetailsEnabled.checked = true;
 
         var layer = layers[activeLayer];

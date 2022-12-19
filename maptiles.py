@@ -538,6 +538,7 @@ def generate_manifest():
             {
                 'path': '/'.join(filepath_for_tiles(map).split('/')[1:]), # remove leading 'site' dir from path.
                 'name': map['name'],
+                'source':map['source'],
                 'attribution':map['attribution'],
                 'license':map['license']
             }
