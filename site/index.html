@@ -11,40 +11,41 @@
 </div>
 <main class="d-flex flex-column flex-xl-row flex-nowrap">
     <div class="d-flex flex-row flex-xl-column flex-shrink-0 p-2 text-bg-dark order-last order-xl-first sidebar">
+        
         <div id="logo" class="d-none d-xl-inline">
             <img src="assets/images/compass-white.png"/> Map Table
         </div>
+
         <div class="d-none d-xl-inline">v1.2.0
             <hr>
-
         </div>
 
         <div id="controls" class=" overflow-auto h-100 p-2">
         </div>
 
         <div id="mapDetails" class="p-1">
-            <div class="container-fluid">
+            <div class="container overflow-auto">
                 <div class="row">
                     <div id="mapDetailsName" class="col-12"></div>
                 </div>
                 <div class="row p-1">
-                    <div class="col-xl-5 col-lg-12 mapDetailsLabel">
+                    <div class="col-5 mapDetailsLabel">
                         <label for="mapDetailsEnabled" class="form-label mapDetailsLabel">Enabled</label>
                     </div>
-                    <div class="col-xl-7 col-lg-12 form-check form-switch checkboxLeft">
+                    <div class="col-7 form-check form-switch checkboxLeft">
                         <input id="mapDetailsEnabled" class="form-check-input" type="checkbox" role="switch" onchange="toggleLayerEnabled()">
                     </div>
                 </div>
                 <div class="row p-1">
-                    <div class="col-xl-5 col-lg-12 ">
+                    <div class="col-5">
                         <label for="mapDetailsOpacity" class="form-label mapDetailsLabel">Opacity</label>
                     </div>
-                    <div class="col-xl-7 col-lg-12">
+                    <div class="col-7">
                         <input id="mapDetailsOpacity" type="range" class="form-range" min="0" max="1" step="0.1" value="1" onchange="setLayerOpacity()">
                     </div>
                 </div>
                 <div class="row p-1">
-                    <div class="btn-group" role="group" aria-label="Basic example">
+                    <div class="btn-group" role="group" aria-label="Map Ordering">
                         <button type="button" class="btn btn-primary" onclick="layerBringToFront()">Bring Front</button>
                         <button type="button" class="btn btn-primary" onclick="layerSendToBack()">Send Back</button>
                       </div>                            
