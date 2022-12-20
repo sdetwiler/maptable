@@ -137,7 +137,20 @@
                 "b": [4865,5382],
                 "c": [5222,5838]
             }
+        },
+        {
+            "file":"data/1911-oakland.jpg",
+            "name":"Oakland 1911",
+            "source":"Stanford Digital Respository",
+            "attribution": "https://purl.stanford.edu/zf247zd9929",
+            "license": "Creative Commons Public Domain",
+            "anchors": {
+                "a": [3755,5403],
+                "b": [4398,5199],
+                "c": [4679,5605]
+            }
         }
+
         
     ]
 }
