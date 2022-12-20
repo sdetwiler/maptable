@@ -3,6 +3,8 @@
 Map Table anchors any map image to known geographic locations and generates map tiles to be viewed on top of [OpenStreetMap](https://openstreetmap.org) data using [Leaflet](https://leafletjs.com
 ). The web viewer provides controls to view multiple map layers and to control their opacity to see each map's differenes and similiarities.
 
+Map Table was originally built to visualize historical maps from Oakland and is [available here](https://piratestudios.com/maptable/).
+
 # Getting Started
 
 Map Tile requires a Python3 virtual environment:
