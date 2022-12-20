@@ -61,7 +61,7 @@ All key/value pairs are required.
 Place your map file in the location you indicate in the object. You will get better results with higher resolution source images, so generally you should obtain the largest image you can.
 
 ### Pick Map Image Anchors
-Next, pick the pixel coordinates in the map image that corrispond to the defined map anchors and enter them into `"anchors"`. An easy way to do this is to load the map into a tool like Photoshop and observe the pixel coordinates for each anchor. Accuracy is key for good results. Anchors are provided in `[x,y]` where `(0,0)` is the upper-left corner of the image.
+Next, pick the pixel coordinates in the map image that correspond to the defined map anchors and enter them into `"anchors"`. An easy way to do this is to load the map into a tool like Photoshop and observe the pixel coordinates for each anchor. Accuracy is key for good results. Anchors are provided in `[x,y]` where `(0,0)` is the upper-left corner of the image.
 
 
 ## Run maptiles
